@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "preserve",
     "jsxImportSource": "vue",
     "sourceMap": true,
@@ -23,12 +23,6 @@
     "noImplicitThis": true,
     "alwaysStrict": true
   },
-  "include": [
-    "**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "node_modules/tdesign-vue-next/global.d.ts"
-  ],
+  "include": ["**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "node_modules/tdesign-vue-next/global.d.ts"],
   "compileOnSave": false
 }

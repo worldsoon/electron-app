@@ -28,9 +28,20 @@ function createWindow(): void {
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+
+  console.log('import.meta.env:', JSON.stringify(import.meta.env))
+
+  const mainWindowURL =
+    import.meta.env.MAIN_VITE_RENDERER_URL || process.env['ELECTRON_RENDERER_URL']
+
+  console.log('mainWindowURL:', mainWindowURL)
+
+  if (is.dev && mainWindowURL) {
+    mainWindow.loadURL(mainWindowURL)
+    // Open devTool if the app is not packaged
+    mainWindow.webContents.openDevTools()
   } else {
+    console.log('loadFile:', join(__dirname, '../renderer/index.html'))
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
