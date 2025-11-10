@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WASM vs JS 性能对比</title>
+</head>
+<body>
+    <h1>斐波那契数列性能测试</h1>
+    <button onclick="runTest()">开始测试</button>
+    <div id="result"></div>
+
+    <!-- Go WASM 需要加载运行时 -->
+    <script src="wasm_exec.js"></script>
+
+    <!-- Go WASM 模块 -->
+    <script>
+       // 加载 Wasm 模块
+        const go = new Go();
+        let wasmLoaded = false;
+
+        // 初始化 Wasm
+        WebAssembly.instantiateStreaming(fetch("fib.wasm"), go.importObject)
+            .then(result => {
+                go.run(result.instance);
+                wasmLoaded = true;
+                console.log("Wasm 模块加载完成");
+            });
+    </script>
+
+    <script>
+        // 原生 JavaScript 实现
+        function jsFib(n) {
+            if (n < 2) return n;
+            return jsFib(n-1) + jsFib(n-2);
+        }
+
+        // 测试框架
+        function runTest() {
+            const testCount = 30;
+            const maxN = 25;
+
+            // 测试 JS 性能
+            let jsTotal = 0;
+            for(let i=0; i<testCount; i++){
+                console.log(`开始 JS 测试 ${i+1}`); // 进度日志
+                let start = performance.now();
+                for(let j=0; j<=maxN; j++){
+                    jsFib(j);
+                }
+                jsTotal += performance.now() - start;
+
+                console.log(`JS 测试 ${i+1} 完成, 耗时: ${(performance.now() - start).toFixed(2)} ms`); // 进度日志
+            }
+            const avgJsTime = jsTotal / testCount;
+
+            // 测试 WASM 性能
+            let wasmTotal = 0;
+            for(let i=0; i<testCount; i++){
+                console.log(`开始 WASM 测试 ${i+1}`); // 进度日志
+                let start = performance.now();
+                for(let j=0; j<=maxN; j++){
+                    fib(j);
+                }
+                wasmTotal += performance.now() - start;
+
+                console.log(`WASM 测试 ${i+1} 完成, 耗时: ${(performance.now() - start).toFixed(2)} ms`); // 进度日志
+            }
+            const avgWasmTime = wasmTotal / testCount;
+
+            // 显示结果
+            document.getElementById('result').innerHTML = `
+                <p>测试次数: ${testCount} 次</p>
+                <p>最大计算数: ${maxN}</p>
+                <p>JS平均耗时: ${(avgJsTime).toFixed(2)} ms</p>
+                <p>WASM平均耗时: ${(avgWasmTime).toFixed(2)} ms</p>
+                <p>性能提升: ${(avgJsTime/avgWasmTime).toFixed(1)} 倍</p>
+            `;
+        }
+    </script>
+</body>
+</html>
